@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Deploy Vite to GitHub Pages
 
 on:
   push:
@@ -27,13 +27,17 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: Install
+      - name: Install dependencies
         run: npm ci
 
-      - name: Build
+      - name: Build Vite project
         run: npm run build
 
-      - name: Upload artifact
+      - name: Copy CNAME into dist
+        run: |
+          if [ -f CNAME ]; then cp CNAME dist/CNAME; fi
+
+      - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist
@@ -43,8 +47,6 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Deploy to GitHub Pages
-        id: deployment
         uses: actions/deploy-pages@v4
